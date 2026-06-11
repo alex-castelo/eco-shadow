@@ -7,6 +7,7 @@ import { Timeline } from "./Timeline";
 import { LoopSlider } from "./LoopSlider";
 import { TranscriptPanel } from "./TranscriptPanel";
 import { Recorder } from "./Recorder";
+import { SubtitleBar } from "./SubtitleBar";
 
 interface Props {
   trackId: number;
@@ -132,7 +133,7 @@ export function PlayerView({ trackId, onBack }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
@@ -325,6 +326,8 @@ export function PlayerView({ trackId, onBack }: Props) {
         </p>
         <Recorder />
       </section>
+
+      <SubtitleBar transcript={transcript} currentTime={currentTime} />
     </div>
   );
 }
