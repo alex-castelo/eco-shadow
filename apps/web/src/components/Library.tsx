@@ -10,6 +10,7 @@ export function Library({ onOpenTrack }: Props) {
   const tracks = useLiveQuery(() => db.tracks.orderBy("createdAt").reverse().toArray());
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   const addFiles = async (files: FileList | File[]) => {
     setError(null);
@@ -66,11 +67,8 @@ export function Library({ onOpenTrack }: Props) {
 
       {/* Track list */}
       <div className="space-y-2">
-        <h2 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
-          Your library
-        </h2>
         {tracks === undefined ? null : tracks.length === 0 ? (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             Nothing here yet. Add an audio file to start practicing.
           </p>
         ) : (
@@ -90,14 +88,36 @@ export function Library({ onOpenTrack }: Props) {
                   </span>
                   <span className="truncate text-sm text-zinc-100">{track.name}</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => void deleteTrack(track.id as number)}
-                  className="text-zinc-500 hover:text-red-400"
-                  title="Delete track"
-                >
-                  ✕
-                </button>
+                {confirmDeleteId === track.id ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void deleteTrack(track.id as number);
+                        setConfirmDeleteId(null);
+                      }}
+                      className="text-xs text-red-400 hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="text-xs text-zinc-500 hover:text-zinc-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDeleteId(track.id as number)}
+                    className="text-zinc-500 hover:text-red-400"
+                    title="Delete track"
+                  >
+                    ✕
+                  </button>
+                )}
               </li>
             ))}
           </ul>

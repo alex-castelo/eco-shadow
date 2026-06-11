@@ -1,9 +1,17 @@
 import { loadSettings, type Provider, type Settings, saveSettings } from "@echoshadow/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function SettingsView() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [saved, setSaved] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
+  }, []);
 
   const update = (patch: Partial<Settings>) => {
     setSettings((s) => ({ ...s, ...patch }));
@@ -56,7 +64,7 @@ export function SettingsView() {
           value={settings.apiKey}
           onChange={(e) => update({ apiKey: e.target.value })}
           placeholder={settings.provider === "groq" ? "gsk_…" : "sk-…"}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-100 placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-100 placeholder-zinc-400 focus:border-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
         />
         <p className="text-xs text-zinc-500">
           {settings.provider === "groq" ? (
@@ -65,6 +73,26 @@ export function SettingsView() {
             <>Get a key at platform.openai.com — whisper-1.</>
           )}
         </p>
+      </div>
+
+      <div className="space-y-1">
+        <label htmlFor="tts-voice" className="text-sm font-medium text-zinc-300">
+          TTS Voice (Drill tab)
+        </label>
+        <select
+          id="tts-voice"
+          value={settings.voiceName}
+          onChange={(e) => update({ voiceName: e.target.value })}
+          disabled={voices.length === 0}
+          className={`w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${voices.length === 0 ? "opacity-40 cursor-not-allowed" : ""}`}
+        >
+          <option value="">System default</option>
+          {voices.map((v) => (
+            <option key={v.name} value={v.name}>
+              {v.name} ({v.lang})
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-3">

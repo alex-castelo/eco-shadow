@@ -5,6 +5,8 @@ const STORAGE_KEY = "echoshadow.settings";
 const DEFAULTS: Settings = {
   provider: "groq",
   apiKey: "",
+  voiceName: "",
+  drillText: "",
 };
 
 export function loadSettings(): Settings {
@@ -15,6 +17,8 @@ export function loadSettings(): Settings {
     return {
       provider: parsed.provider === "openai" ? "openai" : "groq",
       apiKey: typeof parsed.apiKey === "string" ? parsed.apiKey : "",
+      voiceName: typeof parsed.voiceName === "string" ? parsed.voiceName : "",
+      drillText: typeof parsed.drillText === "string" ? parsed.drillText : "",
     };
   } catch {
     return { ...DEFAULTS };

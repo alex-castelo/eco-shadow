@@ -57,7 +57,7 @@ export function Recorder() {
         onClick={recording ? stop : start}
         className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
           recording
-            ? "bg-red-500 text-white hover:bg-red-400"
+            ? "bg-red-500 text-red-950 hover:bg-red-400"
             : "bg-zinc-700 text-zinc-100 hover:bg-zinc-600"
         }`}
       >

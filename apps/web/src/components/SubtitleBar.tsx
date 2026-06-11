@@ -44,7 +44,7 @@ export function SubtitleBar({ transcript, currentTime }: Props) {
   if (!activeSegment) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex h-20 items-center justify-center border-t-2 border-emerald-500 bg-black px-6">
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex h-20 items-center justify-center border-t border-zinc-700 bg-black px-6">
       <p className="text-center text-2xl">
         {segmentWords.length > 0 ? (
           segmentWords.map((w, i) => (

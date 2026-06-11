@@ -45,4 +45,6 @@ export type Provider = "groq" | "openai";
 export interface Settings {
   provider: Provider;
   apiKey: string;
+  voiceName: string;
+  drillText: string;
 }

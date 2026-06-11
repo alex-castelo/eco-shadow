@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-11T00:00:00.000Z",
+  "title": "Design System: EchoShadow",
+  "extensions": {
+    "colorMeta": {
+      "signal-green": {
+        "role": "primary",
+        "displayName": "Signal Green",
+        "canonical": "oklch(0.80 0.17 162)",
+        "tonalRamp": [
+          "oklch(0.20 0.06 162)",
+          "oklch(0.30 0.09 162)",
+          "oklch(0.42 0.11 162)",
+          "oklch(0.52 0.14 162)",
+          "oklch(0.62 0.16 162)",
+          "oklch(0.75 0.17 162)",
+          "oklch(0.87 0.14 162)",
+          "oklch(0.95 0.08 162)"
+        ]
+      },
+      "emerald-active": {
+        "role": "primary",
+        "displayName": "Emerald Active",
+        "canonical": "oklch(0.68 0.18 162)",
+        "tonalRamp": [
+          "oklch(0.15 0.05 162)",
+          "oklch(0.25 0.08 162)",
+          "oklch(0.38 0.11 162)",
+          "oklch(0.50 0.14 162)",
+          "oklch(0.62 0.16 162)",
+          "oklch(0.72 0.17 162)",
+          "oklch(0.84 0.14 162)",
+          "oklch(0.94 0.07 162)"
+        ]
+      },
+      "emerald-dark": {
+        "role": "primary",
+        "displayName": "Emerald Dark",
+        "canonical": "oklch(0.21 0.07 162)",
+        "tonalRamp": [
+          "oklch(0.10 0.03 162)",
+          "oklch(0.18 0.05 162)",
+          "oklch(0.26 0.07 162)",
+          "oklch(0.36 0.09 162)",
+          "oklch(0.48 0.12 162)",
+          "oklch(0.62 0.15 162)",
+          "oklch(0.76 0.16 162)",
+          "oklch(0.90 0.09 162)"
+        ]
+      },
+      "deep-void": {
+        "role": "neutral",
+        "displayName": "Deep Void",
+        "canonical": "oklch(0.10 0.005 264)",
+        "tonalRamp": [
+          "oklch(0.10 0.005 264)",
+          "oklch(0.17 0.005 264)",
+          "oklch(0.24 0.005 264)",
+          "oklch(0.36 0.006 264)",
+          "oklch(0.46 0.006 264)",
+          "oklch(0.58 0.007 264)",
+          "oklch(0.72 0.007 264)",
+          "oklch(0.88 0.005 264)"
+        ]
+      },
+      "surface-elevated": {
+        "role": "neutral",
+        "displayName": "Surface Elevated",
+        "canonical": "oklch(0.17 0.005 264)",
+        "tonalRamp": [
+          "oklch(0.10 0.005 264)",
+          "oklch(0.17 0.005 264)",
+          "oklch(0.24 0.005 264)",
+          "oklch(0.36 0.006 264)",
+          "oklch(0.46 0.006 264)",
+          "oklch(0.58 0.007 264)",
+          "oklch(0.72 0.007 264)",
+          "oklch(0.88 0.005 264)"
+        ]
+      },
+      "border-subtle": {
+        "role": "neutral",
+        "displayName": "Border Subtle",
+        "canonical": "oklch(0.24 0.005 264)",
+        "tonalRamp": [
+          "oklch(0.10 0.005 264)",
+          "oklch(0.17 0.005 264)",
+          "oklch(0.24 0.005 264)",
+          "oklch(0.36 0.006 264)",
+          "oklch(0.46 0.006 264)",
+          "oklch(0.58 0.007 264)",
+          "oklch(0.72 0.007 264)",
+          "oklch(0.88 0.005 264)"
+        ]
+      },
+      "ink-primary": {
+        "role": "neutral",
+        "displayName": "Ink Primary",
+        "canonical": "oklch(0.96 0.003 264)",
+        "tonalRamp": [
+          "oklch(0.10 0.005 264)",
+          "oklch(0.17 0.005 264)",
+          "oklch(0.24 0.005 264)",
+          "oklch(0.36 0.006 264)",
+          "oklch(0.58 0.007 264)",
+          "oklch(0.72 0.007 264)",
+          "oklch(0.84 0.005 264)",
+          "oklch(0.96 0.003 264)"
+        ]
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Error Red",
+        "canonical": "oklch(0.74 0.16 25)",
+        "tonalRamp": [
+          "oklch(0.22 0.07 25)",
+          "oklch(0.34 0.10 25)",
+          "oklch(0.46 0.13 25)",
+          "oklch(0.58 0.16 25)",
+          "oklch(0.68 0.17 25)",
+          "oklch(0.78 0.15 25)",
+          "oklch(0.87 0.10 25)",
+          "oklch(0.94 0.06 25)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Title", "purpose": "App name in header; track name in player. Never used in view body." },
+      "headline": { "displayName": "Headline", "purpose": "Reserved for future expanded surfaces." },
+      "body": { "displayName": "Body", "purpose": "All control labels, transcript text, settings fields. Max 65ch on prose runs." },
+      "label": { "displayName": "Label", "purpose": "Section group headers within cards. One level only per surface." },
+      "mono": { "displayName": "Mono", "purpose": "Time display only — prevents layout shift under rAF clock." }
+    },
+    "shadows": [
+      {
+        "name": "overlay-ambient",
+        "value": "0 8px 24px rgba(0,0,0,0.4)",
+        "purpose": "Popovers, dropdowns, and modals that must detach from the page layer. Maximum permitted shadow. Never on cards, buttons, or inputs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions (bg color, opacity)."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Button hover, nav hover, input focus — any sub-element state change."
+      },
+      {
+        "name": "reduced-motion-override",
+        "value": "transition: none",
+        "purpose": "@media (prefers-reduced-motion: reduce) — all transitions removed."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA: Play/Pause, Start Drill, Transcribe with AI.",
+      "html": "<button class=\"ds-btn-primary\">Start Drill</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; background-color: #10b981; color: #052e22; font-size: 0.875rem; font-weight: 500; font-family: ui-sans-serif, system-ui, sans-serif; padding: 6px 12px; border-radius: 0.5rem; border: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background-color: #34d399; } .ds-btn-primary:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; } @media (prefers-reduced-motion: reduce) { .ds-btn-primary { transition: none; } }"
+    },
+    {
+      "name": "Play Button (Circular)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Transport play/pause control. Circular, 48×48px.",
+      "html": "<button class=\"ds-btn-play\" title=\"Play\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><polygon points=\"5,3 19,12 5,21\" /></svg></button>",
+      "css": ".ds-btn-play { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background-color: #10b981; color: #052e22; border-radius: 9999px; border: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; } .ds-btn-play:hover { background-color: #34d399; } .ds-btn-play:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-btn-play { transition: none; } }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions: Save loop, Stop drill, ← Library, Prev/Next.",
+      "html": "<button class=\"ds-btn-secondary\">Save loop</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; background-color: #3f3f46; color: #f4f4f5; font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; padding: 6px 12px; border-radius: 0.5rem; border: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { background-color: #52525b; } .ds-btn-secondary:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; } .ds-btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; } @media (prefers-reduced-motion: reduce) { .ds-btn-secondary { transition: none; } }"
+    },
+    {
+      "name": "Ghost / Nav Button",
+      "kind": "nav",
+      "refersTo": "button-ghost",
+      "description": "Tab navigation items. Background-fill-only active state.",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-nav-item ds-nav-item--active\">Library</button><button class=\"ds-nav-item\">Drill</button><button class=\"ds-nav-item\">Settings</button></nav>",
+      "css": ".ds-nav { display: flex; gap: 4px; } .ds-nav-item { background: transparent; color: #a1a1aa; font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; padding: 6px 12px; border-radius: 0.5rem; border: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-nav-item:hover { color: #f4f4f5; } .ds-nav-item:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; } .ds-nav-item--active { background-color: #18181b; color: #f4f4f5; } @media (prefers-reduced-motion: reduce) { .ds-nav-item { transition: none; } }"
+    },
+    {
+      "name": "Card Section",
+      "kind": "card",
+      "refersTo": "card-section",
+      "description": "Container for a named feature group (A-B Loop, Transcript, Shadow & Compare).",
+      "html": "<section class=\"ds-card\"><h3 class=\"ds-card__label\">A-B Loop</h3><p class=\"ds-card__body\">Drag the slider handles to mark a segment. Enable loop to repeat it.</p></section>",
+      "css": ".ds-card { background-color: rgba(24, 24, 27, 0.5); border: 1px solid #27272a; border-radius: 0.75rem; padding: 16px; } .ds-card__label { font-size: 0.75rem; font-weight: 600; font-family: ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.075em; text-transform: uppercase; color: #a1a1aa; margin: 0 0 12px 0; } .ds-card__body { font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; color: #71717a; line-height: 1.6; margin: 0; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Number inputs (repeat count, drill reps) and text fields (API key in Settings).",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field__label\">Repeats</span><input class=\"ds-input\" type=\"number\" value=\"3\" min=\"1\" max=\"10\" /></label>",
+      "css": ".ds-field { display: flex; align-items: center; gap: 8px; } .ds-field__label { font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; color: #d4d4d8; } .ds-input { background-color: #18181b; color: #f4f4f5; font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; padding: 4px 8px; border: 1px solid #27272a; border-radius: 0.5rem; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1); width: 4rem; } .ds-input:focus { outline: none; border-color: #34d399; } .ds-input:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-input { transition: none; } }"
+    },
+    {
+      "name": "Loop Tag (Chip)",
+      "kind": "chip",
+      "refersTo": "button-ghost",
+      "description": "Saved loop labels in the A-B Loop panel. Pill shape, inline delete.",
+      "html": "<ul class=\"ds-chip-list\"><li class=\"ds-chip\"><button class=\"ds-chip__name\">0:12 → 0:45 ×3</button><button class=\"ds-chip__delete\" title=\"Delete loop\">✕</button></li></ul>",
+      "css": ".ds-chip-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; } .ds-chip { display: flex; align-items: center; gap: 4px; background-color: #27272a; border-radius: 9999px; padding: 4px 8px 4px 12px; } .ds-chip__name { background: none; border: none; color: #e4e4e7; font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; cursor: pointer; padding: 0; transition: color 150ms; } .ds-chip__name:hover { color: #6ee7b7; } .ds-chip__name:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; border-radius: 2px; } .ds-chip__delete { background: none; border: none; color: #71717a; font-size: 0.75rem; cursor: pointer; padding: 0 4px; transition: color 150ms; } .ds-chip__delete:hover { color: #f87171; } @media (prefers-reduced-motion: reduce) { .ds-chip__name, .ds-chip__delete { transition: none; } }"
+    },
+    {
+      "name": "Track List Item",
+      "kind": "custom",
+      "refersTo": "card-section",
+      "description": "Row in the Library. Open action + type badge + track name + delete.",
+      "html": "<ul class=\"ds-tracklist\"><li class=\"ds-track\"><button class=\"ds-track__open\"><span class=\"ds-track__badge\">Audio</span><span class=\"ds-track__name\">Italian Podcast Ep.12</span></button><button class=\"ds-track__delete\" title=\"Delete track\">✕</button></li></ul>",
+      "css": ".ds-tracklist { list-style: none; padding: 0; margin: 0; border: 1px solid #27272a; border-radius: 0.75rem; overflow: hidden; } .ds-track { display: flex; align-items: center; gap: 12px; background-color: rgba(24,24,27,0.6); padding: 12px 16px; border-bottom: 1px solid #27272a; transition: background-color 150ms; } .ds-track:last-child { border-bottom: none; } .ds-track:hover { background-color: rgba(39,39,42,0.8); } .ds-track__open { display: flex; flex: 1; align-items: center; gap: 12px; background: none; border: none; cursor: pointer; text-align: left; min-width: 0; padding: 0; } .ds-track__badge { flex-shrink: 0; background-color: rgba(16,185,129,0.2); color: #6ee7b7; font-size: 0.75rem; font-weight: 500; font-family: ui-sans-serif, system-ui, sans-serif; padding: 2px 8px; border-radius: 9999px; } .ds-track__name { font-size: 0.875rem; font-family: ui-sans-serif, system-ui, sans-serif; color: #f4f4f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-track__delete { flex-shrink: 0; background: none; border: none; color: #71717a; cursor: pointer; font-size: 0.875rem; padding: 4px; transition: color 150ms; } .ds-track__delete:hover { color: #f87171; } .ds-track__open:focus-visible, .ds-track__delete:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; border-radius: 4px; } @media (prefers-reduced-motion: reduce) { .ds-track, .ds-track__delete { transition: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Drilling Floor",
+    "overview": "EchoShadow's visual system is built for the fifth session, not the first. There is no attempt to charm or onboard — the interface assumes a learner who has done this before, who knows where to go, and who needs nothing between them and the audio. Spare, unadorned, built for the ritual of daily practice.\n\nThe palette is near-black with a single live-state color. Typography is system-native, unheroic. Cards define space without lifting off the surface. The only moment of visual energy is Signal Green — and Signal Green fires only when something is playing, recording, or confirmed.\n\nThis system explicitly rejects: gamified progress UI; generic SaaS dashboard aesthetics; meditation/wellness softness; and audio streaming platform chrome.",
+    "keyCharacteristics": [
+      "Near-black void body with two tonal surface steps — no cream, no warm tint",
+      "Single accent color that activates only on live states (play, record, confirm, active loop)",
+      "Flat elevation — tonal layering via surface color, no shadows",
+      "System font throughout — no display type, no decorative typography",
+      "Controls feel tactile and direct: press it, it responds, nothing delays"
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Signal Green and Emerald Active are the only non-neutral colors. Together they occupy less than 5% of any screen at rest. When the player is idle, the interface is effectively monochromatic. The accent's rarity makes it a reliable live-state indicator, not a decorative palette.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Warmth Rule",
+        "body": "The background and surface colors carry no warm tint. Deep-void and Surface Elevated are near-zero chroma. Warmth is associated with gamified, approachable UX. This system is precise and honest.",
+        "section": "colors"
+      },
+      {
+        "name": "The Label Ceiling Rule",
+        "body": "Label typography (uppercase, tracked) is permitted within cards to name the card's function. It is prohibited at page-level and must never be stacked between paragraphs. One label level per surface.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "No box-shadow on cards, sections, buttons, inputs, or containers. Shadows are permitted only for popover/modal overlays that must visually detach from the page layer — maximum 0 8px 24px rgba(0,0,0,0.4).",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Signal Green (#34d399) exclusively for live/active states: playing, looping, recording, confirmed.",
+      "Do define card sections with 1px solid #27272a border on #18181b/50 background — no shadow, no gradient.",
+      "Do apply outline: 2px solid #34d399; outline-offset: 2px on all :focus-visible interactive elements.",
+      "Do use font-mono for time display to prevent layout shift under the rAF clock.",
+      "Do keep tab navigation background-fill-only for the active state — no accent-color underlines.",
+      "Do use opacity: 0.4 for disabled states — reduce in place, no separate disabled color.",
+      "Do render error messages in error (#f87171) text directly below the failing element.",
+      "Do respect prefers-reduced-motion — all transition-* declarations must have a no-transition override."
+    ],
+    "donts": [
+      "Don't use Signal Green or Emerald Active for decoration, hover highlights on neutral elements, or section backgrounds.",
+      "Don't introduce warm-tinted neutral backgrounds — no cream, sand, linen, paper, parchment, or bone.",
+      "Don't add box-shadow to cards, buttons, or inputs. The system is flat.",
+      "Don't use border-radius above 0.75rem on cards or above 0.5rem on buttons and inputs.",
+      "Don't pair border: 1px solid with a wide drop shadow (blur ≥ 16px) on the same element.",
+      "Don't add gamification — no streak counts, badge illustrations, progress trees, or confetti.",
+      "Don't make it look like a generic SaaS dashboard — no warm-neutral body, hero metrics, or icon-heading card grids.",
+      "Don't apply wellness/meditation aesthetics — no soft gradients, pastel palette, or breathing animations.",
+      "Don't borrow from audio streaming platforms — no album art hero, big playlist column, or Spotify-green reuse.",
+      "Don't stack Label typography at more than one structural level per view.",
+      "Don't use gradient text (background-clip: text with a gradient fill) on any element.",
+      "Don't use position: absolute dropdowns inside overflow: hidden containers — they will clip."
+    ]
+  }
+}

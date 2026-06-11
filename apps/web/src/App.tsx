@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DrillView } from "./components/DrillView";
 import { HowToView } from "./components/HowToView";
 import { Library } from "./components/Library";
 import { PlayerView } from "./components/PlayerView";
@@ -8,6 +9,7 @@ type View =
   | { name: "howto" }
   | { name: "library" }
   | { name: "player"; trackId: number }
+  | { name: "drill" }
   | { name: "settings" };
 
 export default function App() {
@@ -49,6 +51,17 @@ export default function App() {
             </button>
             <button
               type="button"
+              onClick={() => setView({ name: "drill" })}
+              className={`rounded-lg px-3 py-1.5 ${
+                view.name === "drill"
+                  ? "bg-zinc-800 text-zinc-100"
+                  : "text-zinc-400 hover:text-zinc-100"
+              }`}
+            >
+              Drill
+            </button>
+            <button
+              type="button"
               onClick={() => setView({ name: "settings" })}
               className={`rounded-lg px-3 py-1.5 ${
                 view.name === "settings"
@@ -70,6 +83,7 @@ export default function App() {
         {view.name === "player" && (
           <PlayerView trackId={view.trackId} onBack={() => setView({ name: "library" })} />
         )}
+        {view.name === "drill" && <DrillView />}
         {view.name === "settings" && <SettingsView />}
       </main>
     </div>
