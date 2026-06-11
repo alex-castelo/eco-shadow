@@ -81,7 +81,6 @@ export function PlayerView({ trackId, onBack }: Props) {
     loop,
     loopEnabled,
     repeatCount: drillMode ? drillRepsPerSentence : repeatCount,
-    playing,
     onRepeatsDone: drillMode ? handleDrillRepeatsDone : undefined,
     loopDelay: drillMode ? 3 : 0,
   });

@@ -12,7 +12,6 @@ interface Options {
   loopEnabled: boolean;
   /** 0 means loop forever. */
   repeatCount: number;
-  playing: boolean;
   /** Called when a finite repeat cycle completes (instead of just pausing). */
   onRepeatsDone?: () => void;
   /** Seconds to pause after each rep (and before onRepeatsDone). 0 = no pause. */
@@ -30,7 +29,6 @@ export function usePlaybackEngine({
   loop,
   loopEnabled,
   repeatCount,
-  playing,
   onRepeatsDone,
   loopDelay = 0,
 }: Options) {
@@ -62,7 +60,7 @@ export function usePlaybackEngine({
           setDuration((d) => (d === media.duration ? d : media.duration));
         }
 
-        if (playing && loopEnabled && loop && loop.end > loop.start) {
+        if (!media.paused && loopEnabled && loop && loop.end > loop.start) {
           if (t >= loop.end) {
             repsRef.current += 1;
             setRepsDone(repsRef.current);
@@ -105,7 +103,7 @@ export function usePlaybackEngine({
         delayTimerRef.current = null;
       }
     };
-  }, [mediaRef, loop, loopEnabled, repeatCount, playing, loopDelay]);
+  }, [mediaRef, loop, loopEnabled, repeatCount, loopDelay]);
 
   return { currentTime, duration, repsDone };
 }
