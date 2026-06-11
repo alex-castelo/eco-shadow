@@ -1,0 +1,14 @@
+{
+  "name": "echoshadow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open source, local-first language shadowing app with A-B loops and karaoke-style transcripts.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "pnpm --filter @echoshadow/web dev",
+    "build": "pnpm --filter @echoshadow/web build",
+    "preview": "pnpm --filter @echoshadow/web preview",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "packageManager": "pnpm@11.1.3"
+}

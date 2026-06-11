@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #34d399;
+}
+
+/* Dual range slider: stack two native ranges so both thumbs stay usable. */
+.loop-range {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+  background: transparent;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loop-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  border: 2px solid #052e22;
+  cursor: ew-resize;
+}
+
+.loop-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  border: 2px solid #052e22;
+  cursor: ew-resize;
+}
+
+.loop-range::-moz-range-track {
+  background: transparent;
+}
