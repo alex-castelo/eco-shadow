@@ -2,6 +2,7 @@ import { db, type Loop, loadSettings, transcribeAudio } from "@echoshadow/core";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePlaybackEngine } from "../hooks/usePlaybackEngine";
+import { usePlayerKeyboard } from "../hooks/usePlayerKeyboard";
 import { clamp, formatTime, type MediaLike } from "../lib/media";
 import { LoopSlider } from "./LoopSlider";
 import { Recorder } from "./Recorder";
@@ -37,6 +38,7 @@ export function PlayerView({ trackId, onBack }: Props) {
   const [drillMode, setDrillMode] = useState(false);
   const [drillSegmentIndex, setDrillSegmentIndex] = useState(0);
   const [drillRepsPerSentence, setDrillRepsPerSentence] = useState(3);
+  const [confirmDeleteLoopId, setConfirmDeleteLoopId] = useState<number | null>(null);
 
   const loop = useMemo(
     () => (loopEnd > loopStart ? { start: loopStart, end: loopEnd } : null),
@@ -170,6 +172,22 @@ export function PlayerView({ trackId, onBack }: Props) {
     }
   };
 
+  usePlayerKeyboard({
+    togglePlay,
+    seek,
+    currentTime,
+    loopStart,
+    loopEnd,
+    setLoopStart,
+    setLoopEnd,
+    speed,
+    setSpeed,
+    speeds: SPEEDS,
+    drillMode,
+    goNextDrillSegment,
+    goPrevDrillSegment,
+  });
+
   const handleTranscribe = async () => {
     if (!track?.blob) return;
     setTranscribeError(null);
@@ -265,7 +283,7 @@ export function PlayerView({ trackId, onBack }: Props) {
         className={`space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-opacity${drillMode ? " pointer-events-none opacity-40" : ""}`}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">A-B Loop</h3>
+          <h3 className="text-sm font-medium text-zinc-300">A-B Loop</h3>
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-zinc-300">
               <input
@@ -287,7 +305,7 @@ export function PlayerView({ trackId, onBack }: Props) {
                 className="w-16 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm"
                 title="0 = repeat forever"
               />
-              <span className="text-xs text-zinc-500">(0 = ∞)</span>
+              <span className="text-xs text-zinc-400">(0 = ∞)</span>
             </label>
             {loopEnabled && repeatCount > 0 && (
               <span className="text-sm text-emerald-400">
@@ -329,14 +347,36 @@ export function PlayerView({ trackId, onBack }: Props) {
                   {l.name}
                   {l.repeatCount > 0 && <span className="text-zinc-500"> ×{l.repeatCount}</span>}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => void db.loops.delete(l.id as number)}
-                  className="px-1 text-zinc-500 hover:text-red-400"
-                  title="Delete loop"
-                >
-                  ✕
-                </button>
+                {confirmDeleteLoopId === l.id ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void db.loops.delete(l.id as number);
+                        setConfirmDeleteLoopId(null);
+                      }}
+                      className="px-1 text-xs text-red-400 hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteLoopId(null)}
+                      className="px-1 text-xs text-zinc-500 hover:text-zinc-300"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDeleteLoopId(l.id as number)}
+                    className="px-1 text-zinc-500 hover:text-red-400"
+                    title="Delete loop"
+                  >
+                    ✕
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -347,9 +387,7 @@ export function PlayerView({ trackId, onBack }: Props) {
       {segments.length > 0 && (
         <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
-              Sentence Drill
-            </h3>
+            <h3 className="text-sm font-medium text-zinc-300">Sentence Drill</h3>
             {drillMode ? (
               <button
                 type="button"
@@ -435,9 +473,7 @@ export function PlayerView({ trackId, onBack }: Props) {
       {/* Transcript */}
       <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
-            Transcript
-          </h3>
+          <h3 className="text-sm font-medium text-zinc-300">Transcript</h3>
           <button
             type="button"
             onClick={() => void handleTranscribe()}
@@ -453,7 +489,7 @@ export function PlayerView({ trackId, onBack }: Props) {
         {transcript ? (
           <TranscriptPanel transcript={transcript} currentTime={currentTime} onSeekWord={seek} />
         ) : (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             Transcribe this audio with your own API key (Settings) to get karaoke-style
             highlighting.
           </p>
@@ -462,10 +498,8 @@ export function PlayerView({ trackId, onBack }: Props) {
 
       {/* Shadowing recorder */}
       <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-        <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
-          Shadow &amp; compare
-        </h3>
-        <p className="text-sm text-zinc-500">
+        <h3 className="text-sm font-medium text-zinc-300">Shadow &amp; compare</h3>
+        <p className="text-sm text-zinc-400">
           Record yourself repeating the loop, then play both back to compare.
         </p>
         <Recorder />

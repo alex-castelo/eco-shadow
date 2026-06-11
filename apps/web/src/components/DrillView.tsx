@@ -1,5 +1,5 @@
 import { loadSettings, saveSettings } from "@echoshadow/core";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTTS } from "../hooks/useTTS";
 
 const SPEEDS = [0.5, 0.65, 0.75, 0.85, 1, 1.25, 1.5, 2];
@@ -44,29 +44,54 @@ export function DrillView() {
     setMode("drill");
   };
 
-  const stopDrill = () => {
+  const stopDrill = useCallback(() => {
     cancel();
     setMode("edit");
-  };
+  }, [cancel]);
 
-  const goNext = () => {
+  const goNext = useCallback(() => {
     if (currentIndex >= sentences.length - 1) {
       cancel();
       setMode("edit");
     } else {
       setCurrentIndex((i) => i + 1);
     }
-  };
+  }, [currentIndex, sentences.length, cancel]);
 
-  const goPrev = () => {
+  const goPrev = useCallback(() => {
     if (currentIndex > 0) setCurrentIndex((i) => i - 1);
-  };
+  }, [currentIndex]);
 
   const handleTextChange = (value: string) => {
     setRawText(value);
     const settings = loadSettings();
     saveSettings({ ...settings, drillText: value });
   };
+
+  useEffect(() => {
+    if (mode !== "drill") return;
+    const handler = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case " ":
+          e.preventDefault();
+          speak();
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          goNext();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          goPrev();
+          break;
+        case "Escape":
+          stopDrill();
+          break;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [mode, speak, goNext, goPrev, stopDrill]);
 
   if (mode === "edit") {
     return (
@@ -76,7 +101,7 @@ export function DrillView() {
           <p className="mt-1 text-sm text-zinc-400">
             Paste any text below and practice shadowing phrase by phrase with TTS.
           </p>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-2 text-sm text-zinc-400">
             Each phrase is separated by a new line — the TTS reads one phrase at a time. Shadow it
             aloud, then press <span className="text-zinc-300">Next</span> to advance or{" "}
             <span className="text-zinc-300">Repeat</span> to hear it again.
@@ -88,7 +113,7 @@ export function DrillView() {
           onChange={(e) => handleTextChange(e.target.value)}
           placeholder="Paste your text here…"
           rows={10}
-          className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:border-emerald-400 focus:outline-none resize-none"
+          className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-400 focus:border-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 resize-none"
         />
 
         <button
@@ -119,7 +144,7 @@ export function DrillView() {
           else if (i < currentIndex) cls = "text-zinc-500 ";
           return (
             <p key={`s-${i}`} className={`text-sm leading-relaxed ${cls}`}>
-              {sentence}.
+              {sentence}
             </p>
           );
         })}
@@ -161,7 +186,7 @@ export function DrillView() {
         <button
           type="button"
           onClick={goNext}
-          className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600"
+          className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-emerald-950 hover:bg-emerald-400"
         >
           {currentIndex >= sentences.length - 1 ? "Finish" : "Next →"}
         </button>

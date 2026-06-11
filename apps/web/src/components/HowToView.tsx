@@ -51,7 +51,7 @@ export function HowToView() {
   return (
     <div className="space-y-10">
       <div className="space-y-3 text-center">
-        <h1 className="text-2xl font-bold text-zinc-100">EchoShadow</h1>
+        <h1 className="text-2xl font-bold text-zinc-100">How to use EchoShadow</h1>
         <p className="mx-auto max-w-md text-zinc-400 leading-relaxed">
           A shadowing tool for language learners. Load real audio, loop any fragment, record
           yourself, and compare — or drill phrases with TTS when you have no recording.
@@ -59,10 +59,6 @@ export function HowToView() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xs font-semibold tracking-widest text-zinc-500 uppercase">
-          What's in each tab
-        </h2>
-
         <div className="space-y-3">
           {TABS.map((tab) => (
             <div
@@ -75,7 +71,7 @@ export function HowToView() {
                 </span>
                 <div>
                   <span className="font-semibold text-zinc-100">{tab.label}</span>
-                  <span className="ml-2 text-sm text-zinc-500">{tab.tagline}</span>
+                  <span className="ml-2 text-sm text-zinc-400">{tab.tagline}</span>
                 </div>
               </div>
 
@@ -85,7 +81,7 @@ export function HowToView() {
                 <ul className="space-y-2">
                   {tab.features.map((f) => (
                     <li key={f.name} className="flex gap-2 text-sm">
-                      <span className="mt-0.5 text-emerald-500 shrink-0">✓</span>
+                      <span className="mt-0.5 text-zinc-400 shrink-0">·</span>
                       <span>
                         <span className="font-medium text-zinc-200">{f.name}</span>
                         <span className="text-zinc-400"> — {f.detail}</span>
