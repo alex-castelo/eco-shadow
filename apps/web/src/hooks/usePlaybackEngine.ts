@@ -13,6 +13,10 @@ interface Options {
   /** 0 means loop forever. */
   repeatCount: number;
   playing: boolean;
+  /** Called when a finite repeat cycle completes (instead of just pausing). */
+  onRepeatsDone?: () => void;
+  /** Seconds to pause after each rep (and before onRepeatsDone). 0 = no pause. */
+  loopDelay?: number;
 }
 
 /**
@@ -27,11 +31,17 @@ export function usePlaybackEngine({
   loopEnabled,
   repeatCount,
   playing,
+  onRepeatsDone,
+  loopDelay = 0,
 }: Options) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [repsDone, setRepsDone] = useState(0);
   const repsRef = useRef(0);
+  const delayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Keep a stable ref so the rAF closure always calls the latest callback.
+  const onRepeatsDoneRef = useRef(onRepeatsDone);
+  onRepeatsDoneRef.current = onRepeatsDone;
 
   // Reset the repetition counter whenever the loop region changes.
   useEffect(() => {
@@ -57,10 +67,27 @@ export function usePlaybackEngine({
             repsRef.current += 1;
             setRepsDone(repsRef.current);
             if (repeatCount > 0 && repsRef.current >= repeatCount) {
+              // Cycle complete — pause, seek, then notify caller (after delay if set).
               media.pause();
               media.currentTime = loop.start;
               repsRef.current = 0;
               setRepsDone(0);
+              if (loopDelay > 0) {
+                delayTimerRef.current = setTimeout(() => {
+                  delayTimerRef.current = null;
+                  onRepeatsDoneRef.current?.();
+                }, loopDelay * 1000);
+              } else {
+                onRepeatsDoneRef.current?.();
+              }
+            } else if (loopDelay > 0) {
+              // Pause between reps — seek first so the next tick doesn't re-fire.
+              media.pause();
+              media.currentTime = loop.start;
+              delayTimerRef.current = setTimeout(() => {
+                delayTimerRef.current = null;
+                if (mediaRef.current) void mediaRef.current.play();
+              }, loopDelay * 1000);
             } else {
               media.currentTime = loop.start;
             }
@@ -71,8 +98,14 @@ export function usePlaybackEngine({
     };
 
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [mediaRef, loop, loopEnabled, repeatCount, playing]);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (delayTimerRef.current !== null) {
+        clearTimeout(delayTimerRef.current);
+        delayTimerRef.current = null;
+      }
+    };
+  }, [mediaRef, loop, loopEnabled, repeatCount, playing, loopDelay]);
 
   return { currentTime, duration, repsDone };
 }

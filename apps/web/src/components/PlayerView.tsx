@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, loadSettings, transcribeAudio, type Loop } from "@echoshadow/core";
 import { usePlaybackEngine } from "../hooks/usePlaybackEngine";
@@ -37,17 +37,53 @@ export function PlayerView({ trackId, onBack }: Props) {
   const [transcribing, setTranscribing] = useState(false);
   const [transcribeError, setTranscribeError] = useState<string | null>(null);
 
+  const [drillMode, setDrillMode] = useState(false);
+  const [drillSegmentIndex, setDrillSegmentIndex] = useState(0);
+  const [drillRepsPerSentence, setDrillRepsPerSentence] = useState(3);
+
   const loop = useMemo(
     () => (loopEnd > loopStart ? { start: loopStart, end: loopEnd } : null),
     [loopStart, loopEnd],
   );
 
+  const segments = useMemo(() => transcript?.segments ?? [], [transcript]);
+
+  const handleDrillRepeatsDone = useCallback(() => {
+    const next = drillSegmentIndex + 1;
+    setLoopEnabled(false);
+    if (next >= segments.length) {
+      setDrillMode(false);
+    } else {
+      setDrillSegmentIndex(next);
+    }
+  }, [drillSegmentIndex, segments.length]);
+
+  // When the drill segment index advances, seek to new segment and resume.
+  useEffect(() => {
+    if (!drillMode || segments.length === 0) return;
+    const seg = segments[drillSegmentIndex];
+    if (!seg || !mediaRef.current) return;
+    setLoopStart(seg.start);
+    setLoopEnd(seg.end);
+    mediaRef.current.currentTime = seg.start;
+    setLoopEnabled(true);
+    void mediaRef.current.play();
+  }, [drillSegmentIndex, drillMode, segments]);
+
+  // Reset drill when changing tracks.
+  useEffect(() => {
+    setDrillMode(false);
+    setDrillSegmentIndex(0);
+  }, [trackId]);
+
   const { currentTime, duration, repsDone } = usePlaybackEngine({
     mediaRef,
     loop,
     loopEnabled,
-    repeatCount,
+    repeatCount: drillMode ? drillRepsPerSentence : repeatCount,
     playing,
+    onRepeatsDone: drillMode ? handleDrillRepeatsDone : undefined,
+    loopDelay: drillMode ? 3 : 0,
   });
 
   // Object URL for the stored audio blob.
@@ -100,6 +136,40 @@ export function PlayerView({ trackId, onBack }: Props) {
     setRepeatCount(l.repeatCount);
     setLoopEnabled(true);
     seek(l.start);
+  };
+
+  const startDrill = () => {
+    if (segments.length === 0) return;
+    const seg = segments[0];
+    setDrillSegmentIndex(0);
+    setDrillMode(true);
+    setLoopStart(seg.start);
+    setLoopEnd(seg.end);
+    setLoopEnabled(true);
+    if (mediaRef.current) {
+      mediaRef.current.currentTime = seg.start;
+      void mediaRef.current.play();
+    }
+  };
+
+  const stopDrill = () => {
+    setDrillMode(false);
+    setLoopEnabled(false);
+    mediaRef.current?.pause();
+  };
+
+  const goPrevDrillSegment = () => {
+    if (drillSegmentIndex > 0) {
+      setLoopEnabled(false);
+      setDrillSegmentIndex(drillSegmentIndex - 1);
+    }
+  };
+
+  const goNextDrillSegment = () => {
+    if (drillSegmentIndex < segments.length - 1) {
+      setLoopEnabled(false);
+      setDrillSegmentIndex(drillSegmentIndex + 1);
+    }
   };
 
   const handleTranscribe = async () => {
@@ -196,7 +266,7 @@ export function PlayerView({ trackId, onBack }: Props) {
       </div>
 
       {/* Loop controls */}
-      <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+      <section className={`space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-opacity${drillMode ? " pointer-events-none opacity-40" : ""}`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
             A-B Loop
@@ -278,6 +348,92 @@ export function PlayerView({ trackId, onBack }: Props) {
           </ul>
         )}
       </section>
+
+      {/* Sentence Drill */}
+      {segments.length > 0 && (
+        <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
+              Sentence Drill
+            </h3>
+            {drillMode ? (
+              <button
+                onClick={stopDrill}
+                className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600"
+              >
+                Stop
+              </button>
+            ) : (
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-sm text-zinc-300">
+                  Reps
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={drillRepsPerSentence}
+                    onChange={(e) =>
+                      setDrillRepsPerSentence(
+                        Math.max(1, Number(e.target.value) || 1),
+                      )
+                    }
+                    className="w-14 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm"
+                  />
+                </label>
+                <button
+                  onClick={startDrill}
+                  className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-emerald-950 hover:bg-emerald-400"
+                >
+                  Start Drill
+                </button>
+              </div>
+            )}
+          </div>
+
+          {drillMode ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-400">
+                  Sentence {drillSegmentIndex + 1} / {segments.length}
+                </span>
+                <span className="flex gap-1">
+                  {Array.from({ length: drillRepsPerSentence }, (_, i) => (
+                    <span
+                      key={i}
+                      className={`text-sm leading-none ${i < repsDone ? "text-emerald-400" : "text-zinc-700"}`}
+                    >
+                      ●
+                    </span>
+                  ))}
+                </span>
+              </div>
+              <p className="rounded-lg bg-zinc-800 px-3 py-2 text-sm leading-relaxed text-zinc-200">
+                {segments[drillSegmentIndex]?.text}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={goPrevDrillSegment}
+                  disabled={drillSegmentIndex === 0}
+                  className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600 disabled:opacity-40"
+                >
+                  ← Prev
+                </button>
+                <button
+                  onClick={goNextDrillSegment}
+                  disabled={drillSegmentIndex >= segments.length - 1}
+                  className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600 disabled:opacity-40"
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-zinc-500">
+              Repeat each sentence {drillRepsPerSentence}× automatically before advancing to the next.
+            </p>
+          )}
+        </section>
+      )}
 
       {/* Transcript */}
       <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
