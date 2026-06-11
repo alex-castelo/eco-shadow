@@ -1,9 +1,17 @@
 import { loadSettings, type Provider, type Settings, saveSettings } from "@echoshadow/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function SettingsView() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [saved, setSaved] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
+  }, []);
 
   const update = (patch: Partial<Settings>) => {
     setSettings((s) => ({ ...s, ...patch }));
@@ -66,6 +74,27 @@ export function SettingsView() {
           )}
         </p>
       </div>
+
+      {voices.length > 0 && (
+        <div className="space-y-1">
+          <label htmlFor="tts-voice" className="text-sm font-medium text-zinc-300">
+            TTS Voice (Drill tab)
+          </label>
+          <select
+            id="tts-voice"
+            value={settings.voiceName}
+            onChange={(e) => update({ voiceName: e.target.value })}
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-emerald-400 focus:outline-none"
+          >
+            <option value="">System default</option>
+            {voices.map((v) => (
+              <option key={v.name} value={v.name}>
+                {v.name} ({v.lang})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="flex items-center gap-3">
         <button
