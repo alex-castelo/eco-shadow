@@ -33,9 +33,7 @@ export function LoopSlider({ duration, start, end, onChange }: Props) {
           step={0.05}
           value={start}
           aria-label="Loop start"
-          onChange={(e) =>
-            onChange(Math.min(Number(e.target.value), end - MIN_GAP), end)
-          }
+          onChange={(e) => onChange(Math.min(Number(e.target.value), end - MIN_GAP), end)}
         />
         <input
           type="range"
@@ -45,9 +43,7 @@ export function LoopSlider({ duration, start, end, onChange }: Props) {
           step={0.05}
           value={end}
           aria-label="Loop end"
-          onChange={(e) =>
-            onChange(start, Math.max(Number(e.target.value), start + MIN_GAP))
-          }
+          onChange={(e) => onChange(start, Math.max(Number(e.target.value), start + MIN_GAP))}
         />
       </div>
       <div className="mt-1 flex justify-between font-mono text-xs text-zinc-400">

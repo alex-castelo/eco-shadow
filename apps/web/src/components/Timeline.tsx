@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { clamp } from "../lib/media";
 import type { LoopRegion } from "../hooks/usePlaybackEngine";
+import { clamp } from "../lib/media";
 
 interface Props {
   blob: Blob;
@@ -17,14 +17,7 @@ const BAR_COUNT = 200;
  * Visual timeline rendering the decoded waveform of the audio blob.
  * Click anywhere to seek.
  */
-export function Timeline({
-  blob,
-  duration,
-  currentTime,
-  loop,
-  loopEnabled,
-  onSeek,
-}: Props) {
+export function Timeline({ blob, duration, currentTime, loop, loopEnabled, onSeek }: Props) {
   const [peaks, setPeaks] = useState<number[] | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -67,17 +60,30 @@ export function Timeline({
     onSeek(frac * duration);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (duration <= 0) return;
+    const step = duration * 0.05;
+    if (e.key === "ArrowRight") onSeek(clamp(currentTime + step, 0, duration));
+    if (e.key === "ArrowLeft") onSeek(clamp(currentTime - step, 0, duration));
+  };
+
   const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
   const loopLeftPct = loop && duration > 0 ? (loop.start / duration) * 100 : 0;
-  const loopWidthPct =
-    loop && duration > 0 ? ((loop.end - loop.start) / duration) * 100 : 0;
+  const loopWidthPct = loop && duration > 0 ? ((loop.end - loop.start) / duration) * 100 : 0;
 
   const bars = peaks ?? Array.from({ length: BAR_COUNT }, () => 0.45);
 
   return (
     <div
       ref={containerRef}
+      role="slider"
+      tabIndex={0}
+      aria-label="Seek"
+      aria-valuenow={currentTime}
+      aria-valuemin={0}
+      aria-valuemax={duration}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       className="relative h-24 w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-900 select-none"
       title="Click to seek"
     >
@@ -96,7 +102,7 @@ export function Timeline({
           const played = barPct <= progressPct;
           return (
             <div
-              key={i}
+              key={`bar-${i}`}
               className={`flex-1 rounded-sm ${played ? "bg-emerald-400" : "bg-zinc-600"}`}
               style={{ height: `${Math.max(v * 90, 4)}%` }}
             />
@@ -105,10 +111,7 @@ export function Timeline({
       </div>
 
       {/* Playhead */}
-      <div
-        className="absolute inset-y-0 w-0.5 bg-white"
-        style={{ left: `${progressPct}%` }}
-      />
+      <div className="absolute inset-y-0 w-0.5 bg-white" style={{ left: `${progressPct}%` }} />
     </div>
   );
 }

@@ -1,15 +1,13 @@
-import { useState, type DragEvent } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
 import { db, deleteTrack, type Track } from "@echoshadow/core";
+import { useLiveQuery } from "dexie-react-hooks";
+import { type DragEvent, useState } from "react";
 
 interface Props {
   onOpenTrack: (trackId: number) => void;
 }
 
 export function Library({ onOpenTrack }: Props) {
-  const tracks = useLiveQuery(() =>
-    db.tracks.orderBy("createdAt").reverse().toArray(),
-  );
+  const tracks = useLiveQuery(() => db.tracks.orderBy("createdAt").reverse().toArray());
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,18 +81,18 @@ export function Library({ onOpenTrack }: Props) {
                 className="flex items-center gap-3 bg-zinc-900/60 px-4 py-3 hover:bg-zinc-800/80"
               >
                 <button
-                  onClick={() => onOpenTrack(track.id!)}
+                  type="button"
+                  onClick={() => onOpenTrack(track.id as number)}
                   className="flex flex-1 items-center gap-3 text-left"
                 >
                   <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-300">
                     Audio
                   </span>
-                  <span className="truncate text-sm text-zinc-100">
-                    {track.name}
-                  </span>
+                  <span className="truncate text-sm text-zinc-100">{track.name}</span>
                 </button>
                 <button
-                  onClick={() => void deleteTrack(track.id!)}
+                  type="button"
+                  onClick={() => void deleteTrack(track.id as number)}
                   className="text-zinc-500 hover:text-red-400"
                   title="Delete track"
                 >

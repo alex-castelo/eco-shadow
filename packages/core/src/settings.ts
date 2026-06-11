@@ -1,4 +1,4 @@
-import type { Settings, Provider } from "./types";
+import type { Provider, Settings } from "./types";
 
 const STORAGE_KEY = "echoshadow.settings";
 

@@ -1,4 +1,4 @@
-import type { Settings, TranscriptWord, TranscriptSegment } from "./types";
+import type { Settings, TranscriptSegment, TranscriptWord } from "./types";
 
 export interface TranscriptionResult {
   text: string;
@@ -32,7 +32,7 @@ const MODELS = {
 export async function transcribeAudio(
   blob: Blob,
   fileName: string,
-  settings: Settings,
+  settings: Settings
 ): Promise<TranscriptionResult> {
   if (!settings.apiKey) {
     throw new Error("No API key configured. Add one in Settings first.");
@@ -53,9 +53,7 @@ export async function transcribeAudio(
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
-    throw new Error(
-      `Transcription failed (HTTP ${res.status}). ${detail.slice(0, 300)}`,
-    );
+    throw new Error(`Transcription failed (HTTP ${res.status}). ${detail.slice(0, 300)}`);
   }
 
   const data = (await res.json()) as VerboseJsonResponse;

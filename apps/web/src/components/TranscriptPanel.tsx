@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
 import type { Transcript } from "@echoshadow/core";
+import { useEffect, useMemo, useRef } from "react";
 
 interface Props {
   transcript: Transcript;
@@ -34,6 +34,7 @@ export function TranscriptPanel({ transcript, currentTime, onSeekWord }: Props) 
     return currentTime <= words[found].end + 0.15 ? found : -1;
   }, [words, currentTime]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: activeIndex triggers scroll, activeRef is stable
   useEffect(() => {
     activeRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [activeIndex]);
@@ -50,7 +51,8 @@ export function TranscriptPanel({ transcript, currentTime, onSeekWord }: Props) 
     <div className="max-h-64 overflow-y-auto leading-loose">
       {words.map((w, i) => (
         <button
-          key={i}
+          key={w.start}
+          type="button"
           ref={i === activeIndex ? activeRef : undefined}
           onClick={() => onSeekWord(w.start)}
           className={`rounded px-0.5 transition-colors ${

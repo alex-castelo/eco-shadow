@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from "dexie";
-import type { Track, Loop, Transcript } from "./types";
+import type { Loop, Track, Transcript } from "./types";
 
 export class EchoShadowDB extends Dexie {
   tracks!: EntityTable<Track, "id">;

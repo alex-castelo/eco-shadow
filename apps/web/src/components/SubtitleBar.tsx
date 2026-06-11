@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import type { Transcript } from "@echoshadow/core";
+import { useMemo } from "react";
 
 interface Props {
   transcript: Transcript | undefined;
@@ -19,7 +19,7 @@ export function SubtitleBar({ transcript, currentTime }: Props) {
   const segmentWords = useMemo(() => {
     if (!activeSegment || !transcript?.words?.length) return [];
     return transcript.words.filter(
-      (w) => w.start >= activeSegment.start - 0.05 && w.end <= activeSegment.end + 0.05,
+      (w) => w.start >= activeSegment.start - 0.05 && w.end <= activeSegment.end + 0.05
     );
   }, [activeSegment, transcript?.words]);
 
@@ -49,12 +49,8 @@ export function SubtitleBar({ transcript, currentTime }: Props) {
         {segmentWords.length > 0 ? (
           segmentWords.map((w, i) => (
             <span
-              key={i}
-              className={
-                i === activeWordIndex
-                  ? "font-semibold text-emerald-400"
-                  : "text-zinc-200"
-              }
+              key={w.start}
+              className={i === activeWordIndex ? "font-semibold text-emerald-400" : "text-zinc-200"}
             >
               {w.word}{" "}
             </span>

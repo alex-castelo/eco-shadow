@@ -13,7 +13,9 @@ export function Recorder() {
 
   useEffect(() => {
     return () => {
-      recorderRef.current?.stream.getTracks().forEach((t) => t.stop());
+      recorderRef.current?.stream.getTracks().forEach((t) => {
+        t.stop();
+      });
       if (audioUrl) URL.revokeObjectURL(audioUrl);
     };
   }, [audioUrl]);
@@ -31,7 +33,9 @@ export function Recorder() {
           if (prev) URL.revokeObjectURL(prev);
           return URL.createObjectURL(blob);
         });
-        stream.getTracks().forEach((t) => t.stop());
+        stream.getTracks().forEach((t) => {
+          t.stop();
+        });
       };
       recorder.start();
       recorderRef.current = recorder;
@@ -49,6 +53,7 @@ export function Recorder() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <button
+        type="button"
         onClick={recording ? stop : start}
         className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
           recording
@@ -59,6 +64,7 @@ export function Recorder() {
         {recording ? "■ Stop" : "● Record yourself"}
       </button>
       {audioUrl && (
+        // biome-ignore lint/a11y/useMediaCaption: recording playback preview, no caption applicable
         <audio controls src={audioUrl} className="h-9 max-w-full flex-1" />
       )}
       {error && <span className="text-sm text-red-400">{error}</span>}

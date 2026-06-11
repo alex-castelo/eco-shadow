@@ -1,10 +1,5 @@
+import { loadSettings, type Provider, type Settings, saveSettings } from "@echoshadow/core";
 import { useState } from "react";
-import {
-  loadSettings,
-  saveSettings,
-  type Provider,
-  type Settings,
-} from "@echoshadow/core";
 
 export function SettingsView() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
@@ -25,18 +20,19 @@ export function SettingsView() {
       <div>
         <h2 className="text-lg font-semibold text-zinc-100">Transcription API</h2>
         <p className="mt-1 text-sm text-zinc-400">
-          EchoShadow is local-first: your key is stored only in this browser's
-          localStorage and requests go directly from your browser to the
-          provider. Nothing passes through any other server.
+          EchoShadow is local-first: your key is stored only in this browser's localStorage and
+          requests go directly from your browser to the provider. Nothing passes through any other
+          server.
         </p>
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-zinc-300">Provider</label>
+        <p className="text-sm font-medium text-zinc-300">Provider</p>
         <div className="flex gap-2">
           {(["groq", "openai"] as Provider[]).map((p) => (
             <button
               key={p}
+              type="button"
               onClick={() => update({ provider: p })}
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 settings.provider === p
@@ -73,6 +69,7 @@ export function SettingsView() {
 
       <div className="flex items-center gap-3">
         <button
+          type="button"
           onClick={handleSave}
           className="rounded-lg bg-emerald-500 px-5 py-2 text-sm font-medium text-emerald-950 hover:bg-emerald-400"
         >

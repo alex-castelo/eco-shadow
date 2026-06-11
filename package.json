@@ -8,7 +8,22 @@
     "dev": "pnpm --filter @echoshadow/web dev",
     "build": "pnpm --filter @echoshadow/web build",
     "preview": "pnpm --filter @echoshadow/web preview",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "prepare": "simple-git-hooks"
   },
-  "packageManager": "pnpm@11.1.3"
+  "packageManager": "pnpm@11.1.3",
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.16",
+    "lint-staged": "^17.0.7",
+    "simple-git-hooks": "^2.13.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged && pnpm typecheck"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "biome check --write --no-errors-on-unmatched"
+  }
 }

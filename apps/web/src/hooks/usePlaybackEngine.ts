@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import type { MediaLike } from "../lib/media";
 
 export interface LoopRegion {
@@ -42,6 +42,7 @@ export function usePlaybackEngine({
   onRepeatsDoneRef.current = onRepeatsDone;
 
   // Reset the repetition counter whenever the loop region changes.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: props intentionally trigger reset
   useEffect(() => {
     repsRef.current = 0;
     setRepsDone(0);

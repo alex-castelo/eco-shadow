@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { db, type Loop, loadSettings, transcribeAudio } from "@echoshadow/core";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db, loadSettings, transcribeAudio, type Loop } from "@echoshadow/core";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePlaybackEngine } from "../hooks/usePlaybackEngine";
-import { formatTime, clamp, type MediaLike } from "../lib/media";
-import { Timeline } from "./Timeline";
+import { clamp, formatTime, type MediaLike } from "../lib/media";
 import { LoopSlider } from "./LoopSlider";
-import { TranscriptPanel } from "./TranscriptPanel";
 import { Recorder } from "./Recorder";
 import { SubtitleBar } from "./SubtitleBar";
+import { Timeline } from "./Timeline";
+import { TranscriptPanel } from "./TranscriptPanel";
 
 interface Props {
   trackId: number;
@@ -18,13 +18,10 @@ const SPEEDS = [0.5, 0.65, 0.75, 0.85, 1, 1.25, 1.5, 2];
 
 export function PlayerView({ trackId, onBack }: Props) {
   const track = useLiveQuery(() => db.tracks.get(trackId), [trackId]);
-  const loops = useLiveQuery(
-    () => db.loops.where("trackId").equals(trackId).toArray(),
-    [trackId],
-  );
+  const loops = useLiveQuery(() => db.loops.where("trackId").equals(trackId).toArray(), [trackId]);
   const transcript = useLiveQuery(
     () => db.transcripts.where("trackId").equals(trackId).first(),
-    [trackId],
+    [trackId]
   );
 
   const mediaRef = useRef<MediaLike | null>(null);
@@ -43,7 +40,7 @@ export function PlayerView({ trackId, onBack }: Props) {
 
   const loop = useMemo(
     () => (loopEnd > loopStart ? { start: loopStart, end: loopEnd } : null),
-    [loopStart, loopEnd],
+    [loopStart, loopEnd]
   );
 
   const segments = useMemo(() => transcript?.segments ?? [], [transcript]);
@@ -71,6 +68,7 @@ export function PlayerView({ trackId, onBack }: Props) {
   }, [drillSegmentIndex, drillMode, segments]);
 
   // Reset drill when changing tracks.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: trackId is a prop, not a setter
   useEffect(() => {
     setDrillMode(false);
     setDrillSegmentIndex(0);
@@ -88,7 +86,7 @@ export function PlayerView({ trackId, onBack }: Props) {
   // Object URL for the stored audio blob.
   const audioUrl = useMemo(
     () => (track?.blob ? URL.createObjectURL(track.blob) : null),
-    [track?.blob],
+    [track?.blob]
   );
   useEffect(() => {
     return () => {
@@ -101,6 +99,7 @@ export function PlayerView({ trackId, onBack }: Props) {
     if (duration > 0 && loopEnd === 0) setLoopEnd(duration);
   }, [duration, loopEnd]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: track?.id resets rate on track change
   useEffect(() => {
     if (mediaRef.current) mediaRef.current.playbackRate = speed;
   }, [speed, track?.id]);
@@ -176,11 +175,7 @@ export function PlayerView({ trackId, onBack }: Props) {
     setTranscribeError(null);
     setTranscribing(true);
     try {
-      const result = await transcribeAudio(
-        track.blob,
-        `${track.name}.mp3`,
-        loadSettings(),
-      );
+      const result = await transcribeAudio(track.blob, `${track.name}.mp3`, loadSettings());
       await db.transcripts.where("trackId").equals(trackId).delete();
       await db.transcripts.add({
         trackId,
@@ -205,17 +200,17 @@ export function PlayerView({ trackId, onBack }: Props) {
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3">
         <button
+          type="button"
           onClick={onBack}
           className="rounded-lg bg-zinc-800 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-700"
         >
           ← Library
         </button>
-        <h2 className="truncate text-lg font-semibold text-zinc-100">
-          {track.name}
-        </h2>
+        <h2 className="truncate text-lg font-semibold text-zinc-100">{track.name}</h2>
       </div>
 
       {audioUrl && (
+        // biome-ignore lint/a11y/useMediaCaption: audio player for uploaded track, no caption applicable
         <audio
           ref={(el) => {
             mediaRef.current = el;
@@ -239,6 +234,7 @@ export function PlayerView({ trackId, onBack }: Props) {
       {/* Transport controls */}
       <div className="flex flex-wrap items-center gap-4">
         <button
+          type="button"
           onClick={togglePlay}
           className="h-12 w-12 rounded-full bg-emerald-500 text-xl text-emerald-950 hover:bg-emerald-400"
           title={playing ? "Pause" : "Play"}
@@ -265,11 +261,11 @@ export function PlayerView({ trackId, onBack }: Props) {
       </div>
 
       {/* Loop controls */}
-      <section className={`space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-opacity${drillMode ? " pointer-events-none opacity-40" : ""}`}>
+      <section
+        className={`space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-opacity${drillMode ? " pointer-events-none opacity-40" : ""}`}
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
-            A-B Loop
-          </h3>
+          <h3 className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">A-B Loop</h3>
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-zinc-300">
               <input
@@ -287,9 +283,7 @@ export function PlayerView({ trackId, onBack }: Props) {
                 min={0}
                 max={99}
                 value={repeatCount}
-                onChange={(e) =>
-                  setRepeatCount(Math.max(0, Number(e.target.value) || 0))
-                }
+                onChange={(e) => setRepeatCount(Math.max(0, Number(e.target.value) || 0))}
                 className="w-16 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm"
                 title="0 = repeat forever"
               />
@@ -301,6 +295,7 @@ export function PlayerView({ trackId, onBack }: Props) {
               </span>
             )}
             <button
+              type="button"
               onClick={() => void saveLoop()}
               className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600"
             >
@@ -327,16 +322,16 @@ export function PlayerView({ trackId, onBack }: Props) {
                 className="flex items-center gap-1 rounded-full bg-zinc-800 py-1 pr-2 pl-3 text-sm"
               >
                 <button
+                  type="button"
                   onClick={() => applyLoop(l)}
                   className="text-zinc-200 hover:text-emerald-300"
                 >
                   {l.name}
-                  {l.repeatCount > 0 && (
-                    <span className="text-zinc-500"> ×{l.repeatCount}</span>
-                  )}
+                  {l.repeatCount > 0 && <span className="text-zinc-500"> ×{l.repeatCount}</span>}
                 </button>
                 <button
-                  onClick={() => void db.loops.delete(l.id!)}
+                  type="button"
+                  onClick={() => void db.loops.delete(l.id as number)}
                   className="px-1 text-zinc-500 hover:text-red-400"
                   title="Delete loop"
                 >
@@ -357,6 +352,7 @@ export function PlayerView({ trackId, onBack }: Props) {
             </h3>
             {drillMode ? (
               <button
+                type="button"
                 onClick={stopDrill}
                 className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600"
               >
@@ -372,14 +368,13 @@ export function PlayerView({ trackId, onBack }: Props) {
                     max={10}
                     value={drillRepsPerSentence}
                     onChange={(e) =>
-                      setDrillRepsPerSentence(
-                        Math.max(1, Number(e.target.value) || 1),
-                      )
+                      setDrillRepsPerSentence(Math.max(1, Number(e.target.value) || 1))
                     }
                     className="w-14 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm"
                   />
                 </label>
                 <button
+                  type="button"
                   onClick={startDrill}
                   className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-emerald-950 hover:bg-emerald-400"
                 >
@@ -398,7 +393,7 @@ export function PlayerView({ trackId, onBack }: Props) {
                 <span className="flex gap-1">
                   {Array.from({ length: drillRepsPerSentence }, (_, i) => (
                     <span
-                      key={i}
+                      key={`rep-${i}`}
                       className={`text-sm leading-none ${i < repsDone ? "text-emerald-400" : "text-zinc-700"}`}
                     >
                       ●
@@ -411,6 +406,7 @@ export function PlayerView({ trackId, onBack }: Props) {
               </p>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={goPrevDrillSegment}
                   disabled={drillSegmentIndex === 0}
                   className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600 disabled:opacity-40"
@@ -418,6 +414,7 @@ export function PlayerView({ trackId, onBack }: Props) {
                   ← Prev
                 </button>
                 <button
+                  type="button"
                   onClick={goNextDrillSegment}
                   disabled={drillSegmentIndex >= segments.length - 1}
                   className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-600 disabled:opacity-40"
@@ -428,7 +425,8 @@ export function PlayerView({ trackId, onBack }: Props) {
             </div>
           ) : (
             <p className="text-sm text-zinc-500">
-              Repeat each sentence {drillRepsPerSentence}× automatically before advancing to the next.
+              Repeat each sentence {drillRepsPerSentence}× automatically before advancing to the
+              next.
             </p>
           )}
         </section>
@@ -441,32 +439,23 @@ export function PlayerView({ trackId, onBack }: Props) {
             Transcript
           </h3>
           <button
+            type="button"
             onClick={() => void handleTranscribe()}
             disabled={transcribing}
             className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-emerald-950 hover:bg-emerald-400 disabled:opacity-50"
           >
-            {transcribing
-              ? "Transcribing…"
-              : transcript
-                ? "Re-transcribe"
-                : "Transcribe with AI"}
+            {transcribing ? "Transcribing…" : transcript ? "Re-transcribe" : "Transcribe with AI"}
           </button>
         </div>
 
-        {transcribeError && (
-          <p className="text-sm text-red-400">{transcribeError}</p>
-        )}
+        {transcribeError && <p className="text-sm text-red-400">{transcribeError}</p>}
 
         {transcript ? (
-          <TranscriptPanel
-            transcript={transcript}
-            currentTime={currentTime}
-            onSeekWord={seek}
-          />
+          <TranscriptPanel transcript={transcript} currentTime={currentTime} onSeekWord={seek} />
         ) : (
           <p className="text-sm text-zinc-500">
-            Transcribe this audio with your own API key (Settings) to get
-            karaoke-style highlighting.
+            Transcribe this audio with your own API key (Settings) to get karaoke-style
+            highlighting.
           </p>
         )}
       </section>

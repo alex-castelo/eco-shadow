@@ -4,3 +4,18 @@ dist/
 .DS_Store
 *.log
 .vite/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
