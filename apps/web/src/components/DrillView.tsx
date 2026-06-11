@@ -6,7 +6,7 @@ const SPEEDS = [0.5, 0.65, 0.75, 0.85, 1, 1.25, 1.5, 2];
 
 function splitIntoSentences(text: string): string[] {
   return text
-    .split(/[.?!]+/)
+    .split(/\n+/)
     .map((s) => s.trim())
     .filter((s) => s.length >= 2);
 }
@@ -74,7 +74,12 @@ export function DrillView() {
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">Text Drill</h2>
           <p className="mt-1 text-sm text-zinc-400">
-            Paste any text below and practice shadowing each sentence with TTS.
+            Paste any text below and practice shadowing phrase by phrase with TTS.
+          </p>
+          <p className="mt-2 text-sm text-zinc-500">
+            Each phrase is separated by a new line — the TTS reads one phrase at a time. Shadow it
+            aloud, then press <span className="text-zinc-300">Next</span> to advance or{" "}
+            <span className="text-zinc-300">Repeat</span> to hear it again.
           </p>
         </div>
 
