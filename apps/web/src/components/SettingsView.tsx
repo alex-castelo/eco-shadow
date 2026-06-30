@@ -1,17 +1,13 @@
 import { loadSettings, type Provider, type Settings, saveSettings } from "@echoshadow/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useVoices } from "../hooks/useVoices";
+import { sortVoicesForPicker } from "../lib/voices";
 
 export function SettingsView() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [saved, setSaved] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-
-  useEffect(() => {
-    const load = () => setVoices(window.speechSynthesis.getVoices());
-    load();
-    window.speechSynthesis.addEventListener("voiceschanged", load);
-    return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
-  }, []);
+  const voices = useVoices();
+  const { recommended, others } = sortVoicesForPicker(voices);
 
   const update = (patch: Partial<Settings>) => {
     setSettings((s) => ({ ...s, ...patch }));
@@ -86,13 +82,45 @@ export function SettingsView() {
           disabled={voices.length === 0}
           className={`w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${voices.length === 0 ? "opacity-40 cursor-not-allowed" : ""}`}
         >
-          <option value="">System default</option>
-          {voices.map((v) => (
-            <option key={v.name} value={v.name}>
-              {v.name} ({v.lang})
-            </option>
-          ))}
+          <option value="">Auto (best available)</option>
+          {recommended.length > 0 && (
+            <optgroup label="Recommended — natural">
+              {recommended.map((v) => (
+                <option key={v.name} value={v.name}>
+                  {v.name} ({v.lang})
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {others.length > 0 && (
+            <optgroup label="Other voices">
+              {others.map((v) => (
+                <option key={v.name} value={v.name}>
+                  {v.name} ({v.lang})
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
+        <p className="text-xs text-zinc-500">
+          Voices come from your browser/OS and vary in quality. "Auto" picks the most natural one
+          available. For the best quality, install a premium voice pack:
+        </p>
+        <ul className="ml-4 list-disc space-y-0.5 text-xs text-zinc-500">
+          <li>
+            <span className="text-zinc-400">macOS / iOS:</span> System Settings → Accessibility →
+            Spoken Content → System Voice → Manage Voices, then download an "(Enhanced)" or
+            "(Premium)" voice.
+          </li>
+          <li>
+            <span className="text-zinc-400">Windows:</span> Settings → Time &amp; Language → Speech
+            → Add voices (the "Natural" voices sound best).
+          </li>
+          <li>
+            <span className="text-zinc-400">Chrome / Edge:</span> the "Google" and "… (Natural)"
+            voices are highest quality but require an internet connection.
+          </li>
+        </ul>
       </div>
 
       <div className="flex items-center gap-3">
